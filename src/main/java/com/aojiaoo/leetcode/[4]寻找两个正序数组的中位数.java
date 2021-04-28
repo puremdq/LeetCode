@@ -60,7 +60,7 @@ package com.aojiaoo.leetcode;//给定两个大小分别为 m 和 n 的正序（�
 
 
 //leetcode submit region begin(Prohibit modification and deletion)
-class Solution {
+class Solution4 {
     public double findMedianSortedArrays(int[] nums1, int[] nums2) {
         int length = nums1.length + nums2.length;
         int index1 = -1;
@@ -114,7 +114,7 @@ class Solution {
     }
 
     public static void main(String[] args) {
-        Solution solution = new Solution();
+        Solution4 solution = new Solution4();
         double medianSortedArrays = solution.findMedianSortedArrays(new int[]{0}, new int[]{1});
         System.out.println(medianSortedArrays);
     }
