@@ -104,13 +104,13 @@ class Solution4 {
             }
 
             if (index2 == -1 && i + j - 1 == index1) {
-                return Double.valueOf(current);
+                return (double) current;
             }
             if (index2 != -1 && (i + j - 1) == index2) {
                 return (current + pre) / 2D;
             }
         }
-        return (current + pre) / 2;
+        return (current + pre) >> 1;
     }
 
     public static void main(String[] args) {
