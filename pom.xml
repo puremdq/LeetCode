@@ -20,15 +20,26 @@
     </properties>
     <dependencies>
 
+        <dependency>
+            <groupId>com.aojiaoo</groupId>
+            <artifactId>aojiaoo-common</artifactId>
+            <version>${aojiaoo.version}</version>
+
+            <exclusions>
+                <exclusion>
+                    <groupId>com.baomidou</groupId>
+                    <artifactId>mybatis-plus-boot-starter</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
 
 
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
             <optional>true</optional>
-            <scope>provided</scope>
+            <scope>compile</scope>
         </dependency>
-
 
         <!-- Slf4j 依赖 -->
         <dependency>
