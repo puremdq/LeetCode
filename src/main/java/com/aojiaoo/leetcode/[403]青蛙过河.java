@@ -37,69 +37,80 @@ package com.aojiaoo.leetcode;//一只青蛙想要过河。 假定河流被等分
 // 👍 303 👎 0
 
 
-import java.util.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import util.GenUtil;
+
+import java.util.HashMap;
+import java.util.Map;
 
 //leetcode submit region begin(Prohibit modification and deletion)
 class Solution403 {
 
     //石头位置所在的索引
     Map<Integer, Integer> stonesAreaIndex = new HashMap<>();
-    Map<Integer, Set<Integer>> deadWays = new HashMap<>();
+    Map<Integer, Map<Integer, Integer>> deadWays = new HashMap<>();
     //step[1]=1  //表示第0个石头是由调一步得来的
     int[] stoneIndexWitchFrom;
-    int[] stoneIndexWitchNext;
+    public static final Logger logger = LoggerFactory.getLogger(Solution403.class);
 
-    private void init(int[] stones) {
-        for (int i = 0; i < stones.length; i++) {
-            stonesAreaIndex.put(stones[i], i);
-        }
-
-        stoneIndexWitchFrom = new int[stones.length];
-        stoneIndexWitchNext = new int[stones.length];
-        stoneIndexWitchFrom[1] = 0;
-        stoneIndexWitchNext[0] = 1;
-    }
-
-    public boolean canCross(int[] stones) {
+    private boolean init(int[] stones) {
         if (stones.length == 1) {
             return true;
         }
-        if (stones.length == 2) {
-            return stones[0] == 0 && stones[1] == 1;
+        stonesAreaIndex.put(0, 0);
+        for (int i = 1; i < stones.length; i++) {
+            if (stones[i] - stones[i - 1] > i) {
+                return false;
+            }
+            stonesAreaIndex.put(stones[i], i);
         }
-        init(stones);
+        stoneIndexWitchFrom = new int[stones.length];
+        stoneIndexWitchFrom[1] = 0;
+
+        return true;
+    }
+
+    public boolean canCross(int[] stones) {
+
+        if (!init(stones)) {
+            return false;
+        }
 
         int currentStoneIndex = 1;
-        while (currentStoneIndex < stones.length) {
+        while (currentStoneIndex != stones.length - 1) {
             //从上一步 过来跳的步数
             int currentIndexFromStep = stones[currentStoneIndex] - stones[stoneIndexWitchFrom[currentStoneIndex]];
-            int currentArea = stones[currentStoneIndex];
-
 
             //尝试要跳的步数
             boolean notFound = true;
             for (int i = -1; i <= 1; i++) {
-                int jumpStep = currentIndexFromStep + 1;
+                int jumpStep = currentIndexFromStep + i;
                 Integer tryNextIndex = tryJumpStep(stones, currentStoneIndex, jumpStep);
                 if (tryNextIndex != null) {
+                    logger.info("currentStoneIndex:{},tryNextIndex:{} 成功,jumpStep={}", currentStoneIndex, tryNextIndex, jumpStep);
                     currentStoneIndex = tryNextIndex;
                     notFound = false;
                     break;
                 }
             }
 
-            if (!notFound) {
-                if (currentStoneIndex == 1) {
+            if (notFound) {
+                if (currentStoneIndex == 0) {
                     //第一个走不通退出
                     return false;
                 }
 
                 int fromIndex = stoneIndexWitchFrom[currentStoneIndex];
-                Set<Integer> currentDeadWaysSet = deadWays.getOrDefault(fromIndex, new HashSet<>());
-                currentDeadWaysSet.add(currentStoneIndex);
-                deadWays.put(fromIndex, currentDeadWaysSet);
+                Map<Integer, Integer> currentDeadWaysMap = deadWays.getOrDefault(fromIndex, new HashMap<>());
 
+                logger.info("currentStoneIndex:{},尝试所有无法走通,添加死路:{}-{}", currentStoneIndex, fromIndex, currentStoneIndex);
+
+                currentDeadWaysMap.put(currentStoneIndex, 1);
+                deadWays.put(fromIndex, currentDeadWaysMap);
+                logger.info("currentStoneIndex:{},尝试所有无法走通,回溯到:{}", currentStoneIndex, fromIndex);
                 //回溯
+                stoneIndexWitchFrom[currentStoneIndex] = 0;
                 currentStoneIndex = fromIndex;
             }
         }
@@ -107,16 +118,15 @@ class Solution403 {
     }
 
     public Integer tryJumpStep(int[] stones, int currentStoneIndex, int jumpStep) {
-        int currentArea = stones[currentStoneIndex];
 
+        int currentArea = stones[currentStoneIndex];
         //尝试要跳的步数所在index
         Integer tryNextIndex = stonesAreaIndex.get(currentArea + jumpStep);
         //当前位置所有的死路
-        Set<Integer> currentDeadWays = deadWays.get(currentStoneIndex);
+        Map<Integer, Integer> currentDeadWaysMap = deadWays.get(currentStoneIndex);
 
-        if (jumpStep > 0 && tryNextIndex != null && (currentDeadWays == null || currentDeadWays.contains(tryNextIndex))) {
+        if (jumpStep > 0 && tryNextIndex != null && (currentDeadWaysMap == null || currentDeadWaysMap.get(tryNextIndex) == null)) {
             stoneIndexWitchFrom[tryNextIndex] = currentStoneIndex;
-            stoneIndexWitchNext[currentStoneIndex] = tryNextIndex;
             return tryNextIndex;
         }
         return null;
@@ -124,10 +134,7 @@ class Solution403 {
 
     public static void main(String[] args) {
         Solution403 solution403 = new Solution403();
-
-        solution403.canCross();
+        System.out.println(solution403.canCross(GenUtil.getIntArray(" [0,1,2,4,5,6,8,9,11,14,19,20,22,23,24,25,27,30]")));
     }
-
-
 }
 //leetcode submit region end(Prohibit modification and deletion)
