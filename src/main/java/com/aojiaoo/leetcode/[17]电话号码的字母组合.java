@@ -50,7 +50,7 @@ class Solution17 {
 
 
     public List<String> letterCombinations(String digits) {
-        if(digits.length()==0){
+        if (digits.length() == 0) {
             return res;
         }
         digitStr = digits;
@@ -64,9 +64,9 @@ class Solution17 {
         String currentStr = strArr[digitStr.charAt(start1) - '0' - 2];
 
         char c = currentStr.charAt(start2);
-        if (start1 == digitStr.length()  -1) {
+        if (start1 == digitStr.length() - 1) {
             res.add(current + c);
-        }else {
+        } else {
             gen(current + c, start1 + 1, 0);
         }
         if (start2 + 1 < currentStr.length()) {
